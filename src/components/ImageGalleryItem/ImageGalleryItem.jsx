@@ -1,4 +1,5 @@
 import { Component } from 'react';
+// import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 import { ImageGalleryItemImg } from './ImageGalleryItem.styled';
 
@@ -24,16 +25,21 @@ const customStyles = {
 Modal.setAppElement('#root');
 
 export class GalleryImage extends Component {
-  state = {
-    isModalOpen: false,
+    constructor () {
+        super();
+        this.state = {
+            showModal: false
   };
+  this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+  }
 
-  openModal = () => this.setState({ isModalOpen: true });
-  closeModal = () => this.setState({ isModalOpen: false });
+  openModal () { this.setState({ showModal: true });}
+  closeModal () { this.setState({ showModal: false });}
 
   render() {
     const { webformatURL, tags, largeImageURL } = this.props.item;
-    const { isModalOpen } = this.state;
+    // const { isModalOpen } = this.state;
     return (
       <div>
         <ImageGalleryItemImg
@@ -43,14 +49,18 @@ export class GalleryImage extends Component {
           onClick={this.openModal}
         />
         <Modal
-          isOpen={isModalOpen}
+          isOpen={this.state.showModal}
+          contentLabel="onRequestClose Example"
           onRequestClose={this.closeModal}
           style={customStyles}
-          contentLabel="Example Modal"
-        >
+         >
           <img src={largeImageURL} alt={tags} />
         </Modal>
       </div>
     );
   }
 }
+
+// const props = {};
+
+// ReactDOM.render(<GalleryImage {...props} />, document.getElementById('root'))

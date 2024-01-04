@@ -8,9 +8,6 @@ import { Wrapper } from './App.styled'
 import { Loader } from '../Loader/Loader'
 import {notifyInfo, notifyInputQuerry, success} from '../Notify/Notify'
 
-
-
-
 export class App extends Component {
   state = {
     query: '',
@@ -83,12 +80,14 @@ export class App extends Component {
   
 
   render () {
-    const { loading, images } = this.state;
+    const { loading, images, ErrorMsg, searchFailed } = this.state;
     return (
       <Wrapper>
         <Searchbar onSubmit={ this.handleSubmit } />
         { loading && <Loader /> }
         { images.length > 0 && <Gallery imgItems={ images } /> } 
+        { searchFailed && images.length === 0 && !loading && (
+        <ErrorMsg>Such images was not found, try find something else 😉</ErrorMsg>)}
         { images.length > 0 && <Pagination onClick={ this.handleLoadMore }>Load More</Pagination> }
         <Toaster position="top-right" reverseOrder={true}/>
       </Wrapper>
