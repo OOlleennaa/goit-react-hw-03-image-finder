@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Toaster } from 'react-hot-toast';
+// import { ToastContainer, toast } from 'react-toastify';
 import { fetchImages } from 'API';
 import { Searchbar } from '../Searchbar/Searchbar';
 import { Gallery } from '../ImageGallery/ImageGallery';
@@ -11,9 +12,13 @@ import {notifyInfo, notifyInputQuerry, success} from '../Notify/Notify'
 export class App extends Component {
   state = {
     query: '',
+    error: false,
+    loading: false,
+    prevQuery: '',
     images: [],
     page: 1,
-    loading: false,
+    showLoadMoreButton: true,
+    searchFailed: false
   };
 
 
@@ -34,6 +39,7 @@ export class App extends Component {
 
     if (prevQuery !== searchQuery || prevPage !== nexPage) {
       this.loadResult();
+      
     }
   };
 
@@ -43,23 +49,29 @@ export class App extends Component {
 
     try {
       this.setState({ loading: true });
-      const img = await fetchImages(searchQuery, nexPage);
-      if (img.length) {
+      const { hits, totalHits }  = await fetchImages(searchQuery, nexPage);
+
+      if (hits.length) {
         this.setState(prevState => ({
-          images: this.state.page > 1 ? [...prevState.images, ...img] : img,
+          images: [...prevState.images, ...hits], loadMore: this.state.page < Math.ceil(totalHits / 12 )
         }));
         success(searchQuery);
-        this.setState({ loading: false });
+        
+        this.setState({ loading: false, showLoadMoreButton: false});
       } else {
         notifyInfo();
-        this.setState({ loading: false });
+        this.setState({ loading: false, 
+          error: false });
       }
-    } catch (error) {
+       } 
+    
+    catch (error) {
       console.log(error);
-      this.setState({ loading: false });
+      this.setState({ error : true });
     }
-  };
 
+  };
+ 
   handleSubmit = (evt) => {
     evt.preventDefault();
     if (evt.target.elements.query.value.trim() === '') {
